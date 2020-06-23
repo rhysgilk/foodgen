@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		h1 {
+			color: #13BF4A;
+			font-weight: bold;
+			font-size: 70px;
+			font-family: Arial Narrow;
+			margin-bottom: 20px;
+		}
+		form {
+			
+		}
+		button {
+			font-size: 18px;
+			font-family: Arial Narrow;
+			background-color: #F5F5F5;
+			border-radius: 30px;
+			border: none;
+		}
+		#add {
+			width: 425px;
+		}
+		#food {
+			width: 420px;
+			border-radius: 30px;
+		}
+		#but1 {
+			width: 210px;
+		}
+		#but2 {
+			width: 210px;
+		}
+		#cont {
+			text-align: center;
+			position: fixed;
+			top: 40%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+		input {
+			font-style: italic;
+			color: grey;
+			text-align: center;
+			height: 20px;
+		}
+		#displayFood, #displayInv {
+			font-size: 18px;
+			font-family: Arial Narrow;
+			color: #13BF4A;
+		}
+	</style>
+</head>
+<body>
+	<span id="cont">
+		<h1>Food Generator</h1>
+		<form id="buts">
+			<button type="button" id="but1" onclick="getInventory(request)">Get Inventory</button>
+			<button type="button" id="but2" onclick="getFood(request)">Generate Food</button>
+		</form><br />
+		<form id="foodPut">
+			<input type="text" id="food" name="food"><br /><br /></input>
+			<button type="button" id="add" onclick="addFood(request)">Add Food</button>
+		</form><br /><br />
+		<span id="displayInv">&nbsp</span>
+		<span id="displayFood">&nbsp</span>
+	</span>
+	<script type="text/javascript">
+		document.getElementById("food").value = "American";
+		var url = "https://2danrgcf6g.execute-api.us-east-2.amazonaws.com/prod/food";
+		var request = new XMLHttpRequest();
+		console.log("1 - request object created");
+		function clear()
+		{
+			document.getElementById("displayInv").innerHTML = "&nbsp";
+			document.getElementById("displayFood").innerHTML = "&nbsp";
+		}
+		function getInventory(request)
+		{
+			clear();
+			if ("withCredentials" in request) {
+				request.open("GET", url + "/inventory", true);
+			} else if (typeof XDomainRequest != "undefined") {
+				request = new XDomainRequest();
+				request.open("GET", url);
+			} else {
+				request = null;
+			}
+			if (!request) {
+				throw new Error("CORS not supported");
+			}
+			console.log("2 - request object opened");
+
+			request.onreadystatechange = function() 
+			{
+				console.log("3 - readystatechange event fired");
+				if (request.readyState == 4 && request.status == 200) {
+					result = request.responseText;
+					text = JSON.parse(result);
+					document.getElementById("displayInv").innerHTML = text.ans;
+				} else if (request.readyState == 4) {
+				} else if (request.readyState == 3) {
+				}
+			}
+			request.send();
+			console.log("4 - Request sent");
+		}
+		function getFood(request)
+		{
+			clear();
+			if ("withCredentials" in request) {
+				request.open("GET", url, true);
+			} else if (typeof XDomainRequest != "undefined") {
+				request = new XDomainRequest();
+				request.open("GET", url);
+			} else {
+				request = null;
+			}
+			if (!request) {
+				throw new Error("CORS not supported");
+			}
+			console.log("2 - request object opened");
+
+			request.onreadystatechange = function() 
+			{
+				console.log("3 - readystatechange event fired");
+				if (request.readyState == 4 && request.status == 200) {
+					result = request.responseText;
+					text = JSON.parse(result);
+					document.getElementById("displayFood").innerHTML = text.ans;
+				} else if (request.readyState == 4) {
+				} else if (request.readyState == 3) {
+				}
+			}
+			request.send();
+			console.log("4 - Request sent");
+		}
+		function addFood(request)
+		{
+			var postfix = "?food=" + document.getElementById("food").value;
+			if ("withCredentials" in request) {
+				request.open("POST", url + postfix, true);
+			} else if (typeof XDomainRequest != "undefined") {
+				request = new XDomainRequest();
+				request.open("POST", url + postfix);
+			} else {
+				request = null;
+			}
+			if (!request) {
+				throw new Error("CORS not supported");
+			}
+			console.log("2 - request object opened");
+
+			request.setRequestHeader('Content-Type', 'application/json');
+			console.log("3 - Request header set");
+
+			request.send();
+			console.log("4 - Request sent");
+		}
+	</script>
+</body>
+</html>
